@@ -3,7 +3,8 @@ package token
 type TokenType string
 
 const (
-	EOF = "EOF"
+	EOF     = "EOF"
+	ILLEGAL = "ILLEGAL"
 
 	IDENT  = "IDENT"
 	INT    = "INT"
@@ -12,7 +13,7 @@ const (
 	// Key words
 	IF       = "IF"
 	ELSE     = "ELSE"
-	FUNCTION = "FUNC"
+	FUNCTION = "FN"
 	LET      = "LET"
 	RETURN   = "RETURN"
 	TRUE     = "TRUE"
@@ -22,7 +23,7 @@ const (
 	PLUS     = "+"
 	MINUS    = "-"
 	DIVIDE   = "/"
-	MULTIPLY = "*"
+	ASTERISK = "*"
 	BANG     = "!"
 	ASSIGN   = "="
 
@@ -33,12 +34,15 @@ const (
 	GT     = ">"
 
 	// Delimiters
-	COMMA      = ","
-	SEMICOLLON = ";"
-	LPAREN     = "("
-	RPAREN     = "("
-	LBRACE     = "{"
-	RBRACE     = "}"
+	COMMA     = ","
+	SEMICOLON = ";"
+	COLON     = ":"
+	LPAREN    = "("
+	RPAREN    = "("
+	LBRACE    = "{"
+	RBRACE    = "}"
+	LBRACKET  = "["
+	RBRACKET  = "]"
 )
 
 type Token struct {
@@ -49,7 +53,7 @@ type Token struct {
 var keywords = map[string]TokenType{
 	"if":     IF,
 	"else":   ELSE,
-	"func":   FUNCTION,
+	"fn":     FUNCTION,
 	"let":    LET,
 	"return": RETURN,
 	"true":   TRUE,
