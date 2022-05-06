@@ -5,8 +5,9 @@ type TokenType string
 const (
 	EOF = "EOF"
 
-	IDENT = "IDENT"
-	INT   = "INT"
+	IDENT  = "IDENT"
+	INT    = "INT"
+	STRING = "STRING"
 
 	// Key words
 	IF       = "IF"
