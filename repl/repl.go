@@ -6,7 +6,7 @@ import (
 	"io"
 
 	"gomonkey/lexer"
-	"gomonkey/token"
+	"gomonkey/parser"
 )
 
 func MainLoop(in io.Reader, out io.Writer) {
@@ -23,9 +23,10 @@ func MainLoop(in io.Reader, out io.Writer) {
 			break
 		} else {
 			l := lexer.New(line)
-			for tok := l.NextToken(); tok.Type != token.EOF; tok = l.NextToken() {
-				fmt.Fprintf(out, "%+v\n", tok)
-			}
+			parser := parser.New(l)
+			program, _ := parser.ParseProgram()
+			s := program.String()
+			fmt.Fprintf(out, "%+v\n", s)
 		}
 	}
 }
