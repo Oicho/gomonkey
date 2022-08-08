@@ -29,48 +29,81 @@ func New(l *lexer.Lexer) *Parser {
 }
 
 func (p *Parser) ParseExpression() (ast.Expression, error) {
+	/*
+		exp := ast.Expression()
+		for {
+			if p.currentToken.Type == token.SEMICOLON {
+				return exp, nil
+			} else if p.currentToken.Type == token.EOF {
+				return nil, errors.New("Unexpected " + string(p.currentToken.Type))
+			} else {
+				// check fort str int or operator
+			}
+		}
+	*/
 	return nil, nil
 }
 
-// TODO add error
-func (p *Parser) ParseLetStatement() (ast.LetStatement, error) {
-	ls := ast.LetStatement{Token: p.currentToken}
+func (p *Parser) ParseLetStatement() (*ast.LetStatement, error) {
+	ls := &ast.LetStatement{Token: p.currentToken}
 	p.NextToken()
 	// check  we have identifier token
+	if p.currentToken.Type != token.IDENT {
+		// TODO check this
+		return nil, errors.New("Unexpected " + string(p.currentToken.Type))
+	}
 	ls.Name = &ast.Identifier{Token: p.currentToken, Value: p.currentToken.Literal}
 	p.NextToken()
 	if p.currentToken.Type != token.ASSIGN {
 		// TODO check this
-		return ls, errors.New("Unexpected " + string(p.currentToken.Type))
+		return nil, errors.New("Unexpected " + string(p.currentToken.Type))
 	}
-	for {
-		if p.currentToken.Type == token.SEMICOLON {
-			break
-		} else if p.currentToken.Type == token.EOF {
-			panic("Unexpected EOF")
-		} else {
-			val, err := p.ParseExpression()
-			if val == nil {
-				return ls, err
-			}
-			ls.Value = val
-		}
+	val, err := p.ParseExpression()
+	if val != nil {
+		return nil, err
+	}
+	ls.Value = val
+	// TODO this should be checked at expression level
+	if p.currentToken.Type != token.SEMICOLON {
+		// TODO check this
+		return nil, errors.New("Unexpected " + string(p.currentToken.Type))
 	}
 	return ls, nil
+}
+
+func (p *Parser) ParseReturnStatement() (*ast.ReturnStatement, error) {
+	rt := &ast.ReturnStatement{Token: p.currentToken}
+	val, err := p.ParseExpression()
+	if val != nil {
+		return nil, err
+	}
+	rt.Value = val
+	// TODO this should be checked at expression level
+	if p.currentToken.Type != token.SEMICOLON {
+		// TODO check this
+		return nil, errors.New("Unexpected " + string(p.currentToken.Type))
+	}
+	return rt, nil
+}
+
+func (p *Parser) ParseStatement() (ast.Statement, error) {
+	switch p.currentToken.Literal {
+	case token.EOF:
+		return nil, nil
+	case token.LET:
+		return p.ParseLetStatement()
+	case token.RETURN:
+		return p.ParseReturnStatement()
+	}
+	return nil, errors.New("Unexpected " + string(p.currentToken.Type))
 }
 
 func (p *Parser) ParseProgram() (*ast.Program, error) {
 	program := &ast.Program{}
 	program.Statements = []ast.Statement{}
-	switch p.currentToken.Literal {
-	case token.EOF:
-		return program, nil
-	case token.LET:
-		_, err := p.ParseLetStatement()
-		if err != nil {
-			return program, err
-		}
-		//program.Statements = append(program.Statements, (ast.Statement)statement)
-	}
+	statement, _ := p.ParseStatement()
+	// TODO
+	program.Statements = append(program.Statements, statement)
+
 	return program, nil
 }

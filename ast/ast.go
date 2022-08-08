@@ -64,20 +64,40 @@ type LetStatement struct {
 	Value Expression
 }
 
-func (ls *LetStatement) statementNode() {
-}
-
-func (ls *LetStatement) TokenLiteral() string {
-	return ls.Token.Literal
-}
-
+func (ls *LetStatement) statementNode()       {}
+func (ls *LetStatement) TokenLiteral() string { return ls.Token.Literal }
 func (ls *LetStatement) String() string {
 	var out bytes.Buffer
-	out.WriteString(ls.TokenLiteral())
-	out.WriteString(" ")
+
+	out.WriteString(ls.TokenLiteral() + " ")
 	out.WriteString(ls.Name.String())
 	out.WriteString(" = ")
-	out.WriteString(ls.Value.String())
+
+	if ls.Value != nil {
+		out.WriteString(ls.Value.String())
+	}
+
+	out.WriteString(";")
+
+	return out.String()
+}
+
+type ReturnStatement struct {
+	Token token.Token
+	Value Expression
+}
+
+func (ls *ReturnStatement) statementNode()       {}
+func (ls *ReturnStatement) TokenLiteral() string { return ls.Token.Literal }
+func (ls *ReturnStatement) String() string {
+	var out bytes.Buffer
+
+	out.WriteString(ls.TokenLiteral() + " ")
+
+	if ls.Value != nil {
+		out.WriteString(ls.Value.String())
+	}
+
 	out.WriteString(";")
 
 	return out.String()
