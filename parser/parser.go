@@ -5,6 +5,7 @@ import (
 	"gomonkey/ast"
 	"gomonkey/lexer"
 	"gomonkey/token"
+	"strconv"
 )
 
 type Parser struct {
@@ -41,6 +42,19 @@ func (p *Parser) ParseExpression() (ast.Expression, error) {
 			}
 		}
 	*/
+	p.NextToken()
+	if p.currentToken.Type == token.INT {
+		i, err := strconv.Atoi(p.currentToken.Literal)
+		ie := &ast.IntegerExpression{Token: p.currentToken, Value: int64(i)}
+		p.NextToken()
+
+		return ie, err
+	} else if p.currentToken.Type == token.STRING {
+		ie := &ast.StringExpression{Token: p.currentToken, Value: p.currentToken.Literal}
+		p.NextToken()
+		return ie, nil
+	}
+
 	return nil, nil
 }
 
@@ -59,7 +73,7 @@ func (p *Parser) ParseLetStatement() (*ast.LetStatement, error) {
 		return nil, errors.New("Unexpected " + string(p.currentToken.Type))
 	}
 	val, err := p.ParseExpression()
-	if val != nil {
+	if val == nil {
 		return nil, err
 	}
 	ls.Value = val
@@ -87,7 +101,7 @@ func (p *Parser) ParseReturnStatement() (*ast.ReturnStatement, error) {
 }
 
 func (p *Parser) ParseStatement() (ast.Statement, error) {
-	switch p.currentToken.Literal {
+	switch p.currentToken.Type {
 	case token.EOF:
 		return nil, nil
 	case token.LET:

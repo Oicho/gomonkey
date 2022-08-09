@@ -3,6 +3,7 @@ package ast
 import (
 	"bytes"
 	"gomonkey/token"
+	"strconv"
 )
 
 type Node interface {
@@ -99,6 +100,54 @@ func (ls *ReturnStatement) String() string {
 	}
 
 	out.WriteString(";")
+
+	return out.String()
+}
+
+type IntegerExpression struct {
+	Token token.Token
+	Value int64
+}
+
+func (ls *IntegerExpression) expressionNode()      {}
+func (ls *IntegerExpression) TokenLiteral() string { return ls.Token.Literal }
+func (ls *IntegerExpression) String() string {
+	var out bytes.Buffer
+
+	out.WriteString(ls.TokenLiteral() + " ")
+	out.WriteString(strconv.Itoa(int(ls.Value)))
+
+	return out.String()
+}
+
+type StringExpression struct {
+	Token token.Token
+	Value string
+}
+
+func (ls *StringExpression) expressionNode()      {}
+func (ls *StringExpression) TokenLiteral() string { return ls.Token.Literal }
+func (ls *StringExpression) String() string {
+	var out bytes.Buffer
+
+	out.WriteString(ls.TokenLiteral() + " ")
+	out.WriteString(ls.Value)
+
+	return out.String()
+}
+
+type BooleanExpression struct {
+	Token token.Token
+	Value string
+}
+
+func (ls *BooleanExpression) expressionNode()      {}
+func (ls *BooleanExpression) TokenLiteral() string { return ls.Token.Literal }
+func (ls *BooleanExpression) String() string {
+	var out bytes.Buffer
+
+	out.WriteString(ls.TokenLiteral() + " ")
+	out.WriteString(ls.Value)
 
 	return out.String()
 }
