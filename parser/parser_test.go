@@ -13,11 +13,12 @@ func TestLetStatements(t *testing.T) {
 		expectedValue      interface{}
 	}{
 		{"let x = 5;", "x", 5},
-		{"let x = 51;", "x", 51},
+		{"let xy = 51;", "xy", 51},
 		{"let x = 0;", "x", 0},
 		// TODO {"let x = -5;", "x", -5},
 
-		//		{"let y = true;", "y", true},
+		{"let y = true;", "y", true},
+		{"let f = false;", "f", false},
 		//{"let foobar = y;", "foobar", "y"},
 	}
 
@@ -82,8 +83,8 @@ func testLiteralExpression(
 		return testIntegerLiteral(t, exp, v)
 		//	case string:
 		//		return testIdentifier(t, exp, v)
-		//	case bool:
-		//		return testBooleanLiteral(t, exp, v)
+	case bool:
+		return testBooleanLiteral(t, exp, v)
 	}
 	t.Errorf("type of exp not handled. got=%T", exp)
 	return false
@@ -102,6 +103,24 @@ func testIntegerLiteral(
 
 	if ie.Value != expected {
 		t.Errorf("ie Value not %d. got=%d", expected, ie.Value)
+		return false
+	}
+	return true
+}
+
+func testBooleanLiteral(
+	t *testing.T,
+	exp ast.Expression,
+	expected bool,
+) bool {
+	ie, err := exp.(*ast.BooleanExpression)
+	if !err {
+		t.Errorf("be not *ast.BooleanExpression. got=%T", ie)
+		return false
+	}
+
+	if ie.Value != expected {
+		t.Errorf("be Value not %t. got=%t", expected, ie.Value)
 		return false
 	}
 	return true

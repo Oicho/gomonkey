@@ -138,7 +138,7 @@ func (ls *StringExpression) String() string {
 
 type BooleanExpression struct {
 	Token token.Token
-	Value string
+	Value bool
 }
 
 func (ls *BooleanExpression) expressionNode()      {}
@@ -147,7 +147,11 @@ func (ls *BooleanExpression) String() string {
 	var out bytes.Buffer
 
 	out.WriteString(ls.TokenLiteral() + " ")
-	out.WriteString(ls.Value)
+	if ls.Value {
+		out.WriteString("true")
+	} else {
+		out.WriteString("false")
+	}
 
 	return out.String()
 }

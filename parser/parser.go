@@ -53,6 +53,14 @@ func (p *Parser) ParseExpression() (ast.Expression, error) {
 		ie := &ast.StringExpression{Token: p.currentToken, Value: p.currentToken.Literal}
 		p.NextToken()
 		return ie, nil
+	} else if p.currentToken.Type == token.TRUE {
+		ie := &ast.BooleanExpression{Token: p.currentToken, Value: true}
+		p.NextToken()
+		return ie, nil
+	} else if p.currentToken.Type == token.FALSE {
+		ie := &ast.BooleanExpression{Token: p.currentToken, Value: false}
+		p.NextToken()
+		return ie, nil
 	}
 
 	return nil, nil
