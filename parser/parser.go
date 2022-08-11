@@ -96,7 +96,7 @@ func (p *Parser) ParseLetStatement() (*ast.LetStatement, error) {
 func (p *Parser) ParseReturnStatement() (*ast.ReturnStatement, error) {
 	rt := &ast.ReturnStatement{Token: p.currentToken}
 	val, err := p.ParseExpression()
-	if val != nil {
+	if err != nil {
 		return nil, err
 	}
 	rt.Value = val
