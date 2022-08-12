@@ -123,9 +123,16 @@ func (p *Parser) ParseStatement() (ast.Statement, error) {
 func (p *Parser) ParseProgram() (*ast.Program, error) {
 	program := &ast.Program{}
 	program.Statements = []ast.Statement{}
-	statement, _ := p.ParseStatement()
-	// TODO
-	program.Statements = append(program.Statements, statement)
+	for {
+		statement, err := p.ParseStatement()
+		if err == nil {
+			return nil, err
+		}
+		if statement == nil {
+			break
+		}
+		program.Statements = append(program.Statements, statement)
+	}
 
 	return program, nil
 }
