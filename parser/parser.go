@@ -11,8 +11,10 @@ import (
 type Parser struct {
 	l *lexer.Lexer
 
-	currentToken token.Token
-	peekToken    token.Token
+	currentToken    token.Token
+	peekToken       token.Token
+	prefixFunctions map[token.TokenType]func() (ast.Expression, error)
+	infixFunctions  map[token.TokenType]func(ast.Expression) (ast.Expression, error)
 }
 
 func (p *Parser) NextToken() {
@@ -25,22 +27,51 @@ func New(l *lexer.Lexer) *Parser {
 	p := &Parser{l: l}
 	p.NextToken()
 	p.NextToken()
+	p.prefixFunctions = make(map[token.TokenType]func() (ast.Expression, error))
+	p.prefixFunctions[token.IDENT] = p.parseIdentifier
+	/*
+		p.prefixFunctions(token.INT, p.parseIntegerLiteral)
+		p.prefixFunctions(token.STRING, p.parseStringLiteral)
+		p.prefixFunctions(token.BANG, p.parsePrefixExpression)
+		p.prefixFunctions(token.MINUS, p.parsePrefixExpression)
+		p.prefixFunctions(token.TRUE, p.parseBoolean)
+		p.prefixFunctions(token.FALSE, p.parseBoolean)
+		p.prefixFunctions(token.LPAREN, p.parseGroupedExpression)
+		p.prefixFunctions(token.IF, p.parseIfExpression)
+		p.prefixFunctions(token.FUNCTION, p.parseFunctionLiteral)
+		p.prefixFunctions(token.LBRACKET, p.parseArrayLiteral)
+		p.prefixFunctions(token.LBRACE, p.parseHashLiteral)
 
+		p.infixParseFns = make(map[token.TokenType]infixParseFn)
+		p.registerInfix(token.PLUS, p.parseInfixExpression)
+		p.registerInfix(token.MINUS, p.parseInfixExpression)
+		p.registerInfix(token.SLASH, p.parseInfixExpression)
+		p.registerInfix(token.ASTERISK, p.parseInfixExpression)
+		p.registerInfix(token.EQ, p.parseInfixExpression)
+		p.registerInfix(token.NOT_EQ, p.parseInfixExpression)
+		p.registerInfix(token.LT, p.parseInfixExpression)
+		p.registerInfix(token.GT, p.parseInfixExpression)
+
+		p.registerInfix(token.LPAREN, p.parseCallExpression)
+		p.registerInfix(token.LBRACKET, p.parseIndexExpression)
+	*/
 	return p
 }
 
 func (p *Parser) ParseExpression() (ast.Expression, error) {
 	/*
-		exp := ast.Expression()
-		for {
-			if p.currentToken.Type == token.SEMICOLON {
-				return exp, nil
-			} else if p.currentToken.Type == token.EOF {
-				return nil, errors.New("Unexpected " + string(p.currentToken.Type))
-			} else {
-				// check fort str int or operator
+		Is operator ? -> prefix
+		Is bool int Ident or str
+			exp := ast.Expression()
+			for {
+				if p.currentToken.Type == token.SEMICOLON {
+					return exp, nil
+				} else if p.currentToken.Type == token.EOF {
+					return nil, errors.New("Unexpected " + string(p.currentToken.Type))
+				} else {
+					// check fort str int or operator
+				}
 			}
-		}
 	*/
 	p.NextToken()
 	if p.currentToken.Type == token.INT {
@@ -64,6 +95,12 @@ func (p *Parser) ParseExpression() (ast.Expression, error) {
 	}
 
 	return nil, nil
+}
+
+func (p *Parser) parseIdentifier() (ast.Expression, error) {
+	id := &ast.Identifier{Token: p.currentToken, Value: p.currentToken.Literal}
+	p.NextToken()
+	return id, nil
 }
 
 func (p *Parser) ParseLetStatement() (*ast.LetStatement, error) {
