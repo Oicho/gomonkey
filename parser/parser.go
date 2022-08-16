@@ -29,13 +29,13 @@ func New(l *lexer.Lexer) *Parser {
 	p.NextToken()
 	p.prefixFunctions = make(map[token.TokenType]func() (ast.Expression, error))
 	p.prefixFunctions[token.IDENT] = p.parseIdentifier
+	p.prefixFunctions[token.INT] = p.parseIntegerLiteral
+	p.prefixFunctions[token.STRING] = p.parseStringLiteral
+	p.prefixFunctions[token.TRUE] = p.parseBoolean
+	p.prefixFunctions[token.FALSE] = p.parseBoolean
 	/*
-		p.prefixFunctions(token.INT, p.parseIntegerLiteral)
-		p.prefixFunctions(token.STRING, p.parseStringLiteral)
 		p.prefixFunctions(token.BANG, p.parsePrefixExpression)
 		p.prefixFunctions(token.MINUS, p.parsePrefixExpression)
-		p.prefixFunctions(token.TRUE, p.parseBoolean)
-		p.prefixFunctions(token.FALSE, p.parseBoolean)
 		p.prefixFunctions(token.LPAREN, p.parseGroupedExpression)
 		p.prefixFunctions(token.IF, p.parseIfExpression)
 		p.prefixFunctions(token.FUNCTION, p.parseFunctionLiteral)
@@ -101,6 +101,39 @@ func (p *Parser) parseIdentifier() (ast.Expression, error) {
 	id := &ast.Identifier{Token: p.currentToken, Value: p.currentToken.Literal}
 	p.NextToken()
 	return id, nil
+}
+
+func (p *Parser) parseIntegerLiteral() (ast.Expression, error) {
+	i, err := strconv.Atoi(p.currentToken.Literal)
+	if err != nil {
+		return nil, err
+	}
+	ie := &ast.IntegerExpression{Token: p.currentToken, Value: int64(i)}
+	p.NextToken()
+	return ie, nil
+}
+
+func (p *Parser) parseStringLiteral() (ast.Expression, error) {
+	ie := &ast.StringExpression{Token: p.currentToken, Value: p.currentToken.Literal}
+	p.NextToken()
+	return ie, nil
+}
+
+func (p *Parser) parseBoolean() (ast.Expression, error) {
+	if p.currentToken.Type == token.TRUE {
+		be := &ast.BooleanExpression{Token: p.currentToken, Value: true}
+		p.NextToken()
+		return be, nil
+	} else {
+		be := &ast.BooleanExpression{Token: p.currentToken, Value: false}
+		p.NextToken()
+		return be, nil
+	}
+}
+
+func (p *Parser) parseInfixExpression(left ast.Expression) (ast.Expression, error) {
+	//right :=
+	return nil, nil
 }
 
 func (p *Parser) ParseLetStatement() (*ast.LetStatement, error) {

@@ -104,6 +104,24 @@ func (ls *ReturnStatement) String() string {
 	return out.String()
 }
 
+type InfixExpression struct {
+	Token    token.Token
+	Left     Expression
+	Right    Expression
+	Operator string
+}
+
+func (ls *InfixExpression) expressionNode()      {}
+func (ls *InfixExpression) TokenLiteral() string { return ls.Token.Literal }
+func (ls *InfixExpression) String() string {
+	var out bytes.Buffer
+
+	out.WriteString(ls.TokenLiteral() + " ")
+	out.WriteString(strconv.Itoa(int(ls.Value)))
+
+	return out.String()
+}
+
 type IntegerExpression struct {
 	Token token.Token
 	Value int64
